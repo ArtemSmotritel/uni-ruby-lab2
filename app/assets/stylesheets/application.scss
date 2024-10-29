@@ -14,3 +14,24 @@
  *= require_self
  */
 @import "bootstrap";
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+
+  nav {
+    display: flex;
+    gap: 20px;
+    align-items: baseline;
+  }
+}
+
+button {
+  border: 0;
+  padding: 5px 10px;
+}
+
+button:hover {
+  background-color: var(--bs-gray);
+}
