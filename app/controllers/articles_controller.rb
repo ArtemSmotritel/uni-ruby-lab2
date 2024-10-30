@@ -1,5 +1,5 @@
 class ArticlesController < ApplicationController
-  # http_basic_authenticate_with name: "abobus", password: "abobus", except: [ :index, :show ]
+  before_action :authenticate_user!, except: [ :index, :show ]
 
   def index
     @articles = Article.all
@@ -14,10 +14,9 @@ class ArticlesController < ApplicationController
   end
 
   def create
-    @article = Article.new(article_params)
-
+    @article = current_user.articles.build(article_params)
     if @article.save
-      redirect_to @article
+      redirect_to @article, notice: "Article was successfully created."
     else
       render :new, status: :unprocessable_entity
     end
@@ -30,6 +29,10 @@ class ArticlesController < ApplicationController
   def update
     @article = Article.find(params[:id])
 
+    unless is_author?(@article)
+      return redirect_to @article, alert: "You are not allowed to do that."
+    end
+
     if @article.update(article_params)
       redirect_to @article
     else
@@ -39,6 +42,11 @@ class ArticlesController < ApplicationController
 
   def destroy
     @article = Article.find(params[:id])
+
+    unless is_author?(@article)
+      return redirect_to @article, alert: "You are not allowed to do that."
+    end
+
     @article.destroy
 
     redirect_to root_path, status: :see_other
@@ -47,5 +55,10 @@ class ArticlesController < ApplicationController
   private
   def article_params
     params.require(:article).permit(:title, :body, :status)
+  end
+
+  private
+  def is_author? (article)
+    article.author.id == current_user.id
   end
 end

@@ -1,7 +1,7 @@
 <% unless comment.archived? %>
   <p>
     <strong>Commenter:</strong>
-    <%= comment.commenter %>
+    <%= comment.author.email %>
   </p>
 
   <p>
@@ -9,11 +9,13 @@
     <%= comment.body %>
   </p>
 
-  <p>
-    <%= link_to "Destroy Comment", [comment.article, comment], data: {
-      turbo_method: :delete,
-      turbo_confirm: "Are you sure?"
-    } %>
-  </p>
+  <% if current_user && current_user.id == comment.author.id %>
+    <p>
+      <%= link_to "Destroy Comment", [comment.article, comment], data: {
+        turbo_method: :delete,
+        turbo_confirm: "Are you sure?"
+      } %>
+    </p>
+  <% end %>
 <% end %>
 <hr>
