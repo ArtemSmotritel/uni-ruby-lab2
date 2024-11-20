@@ -16,6 +16,7 @@ class ArticlesController < ApplicationController
   def create
     @article = current_user.articles.build(article_params)
     if @article.save
+      PublishToTelegramService.new(@article).call
       redirect_to @article, notice: "Article was successfully created."
     else
       render :new, status: :unprocessable_entity
